@@ -54,16 +54,6 @@ def listDummyDataInMethod(methodName,fileName):
 		dummyDataObjects.append(x[0])
 	return dummyDataObjects
 
-def listIfElseConditions(methodName,fileName):
-	file = open(fileName,"r")
-	listIfElseConditions=[]
-	i = file.readlines()
-	for j in range(0,len(i)):
-		if("if" in i[j]):
-			listIfElseConditions.append(i[j])
-		elif("else" in i[j]):
-			listIfElseConditions.append(i[j])
-	return listIfElseConditions
 
 def listInternalObjects(methodName,fileName):
 	dummyDataObjects=listDummyDataInMethod(methodName,fileName)
@@ -80,9 +70,77 @@ def listInternalObjects(methodName,fileName):
 	return objectRel
 
 
+def parseIfElseConditions(methodName,fileName):
+	file = open(fileName,"r")
+	file.seek(0)
+	i = file.readlines() 
+	conditions=[]
+	length = getMethodLength(i,methodName)
+	inMethod=False
+	for j in range(0,len(i)):
+		if(inMethod==True):
+			if("if" in i[j] or "else" in i[j]):
+				print j
+				lineNumber=findBlockLastLine(i,j)
+				conditions=conditions+parseBlock(i,j,lineNumber)
+				j=lineNumber
+				print(j)
+				if(j>length):
+					break
+		if(methodName in i[j]):
+			inMethod=True
+	return conditions
 
 
+def parseBlock(i,j,lineNumber):
+	conditions=[]
+	for k in range(j,lineNumber):
+		if(k>=lineNumber):
+			break
+		if("if" in i[k]):
+			temp=[]
+			temp.append(i[k])
+			lineNum=findBlockLastLine(i,k)
+			temp.append(parseBlock(i,k+1,lineNum))
+			conditions.append(temp)
+			k=lineNum
+		if("else" in i[k]):
+			temp=[]
+			temp.append(i[k])
+			lineNum=findBlockLastLine(i,k)
+			temp.append(parseBlock(i,k+1,lineNum))
+			conditions.append(temp)
+			k=lineNum
+	return conditions
 
+def findBlockLastLine(i,j):
+	count =0
+	while(True):
+		if("}" in i[j]):
+			count =count- findCount("}",i[j])
+		if("{" in i[j]):
+			count =count +findCount("{",i[j])
+		j=j+1
+		if (count<=0):
+			break
+	return j	
+
+def findCount(brace,line):
+	count=0
+	for i in range(0,len(line)):
+		if(line[i] == brace):
+			count =count +1
+	return count
+
+def getMethodLength(i,methodName):
+	count =0
+	for j in range(0,len(i)):
+		if(methodName in i[j]):
+			if("{" in i[j]):
+				count =count +1
+			if("}" in i[j]):
+				count =count -1
+	return count
 
 
 		
