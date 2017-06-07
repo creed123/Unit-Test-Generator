@@ -1,4 +1,4 @@
-def findAutowired(fileName):
+def findAutowired(fileName):#Drawback is doesnt take into account constructor autowiring.
 	file = open(fileName,"r")
 	Autowired = []
 	i= file.readlines()
@@ -10,7 +10,7 @@ def findAutowired(fileName):
 			Autowired.append(y[0])
 	return Autowired
 
-def listAutowiredFieldsInMethods(methodName,fileName):
+def listAutowiredFieldsInMethods(methodName,fileName):#We can list all the autowired fields in the method. 
 	file = open(fileName,"r")
 	Autowired=findAutowired(fileName)
 	lines=[]
@@ -37,7 +37,7 @@ def listAutowiredFieldsInMethods(methodName,fileName):
 				count=count +1
 	return lines
 
-def listDummyDataInMethod(methodName,fileName):
+def listDummyDataInMethod(methodName,fileName):#gets the dummy data objects in the method. Looks for autowired objects in the method. 
 	lines=listAutowiredFieldsInMethods(methodName,fileName)
 	dummyDataObjects=[]
 	for i in range(0,len(lines)):
@@ -55,7 +55,7 @@ def listDummyDataInMethod(methodName,fileName):
 	return dummyDataObjects
 
 
-def listInternalObjects(methodName,fileName):
+def listInternalObjects(methodName,fileName):#Creates a dictionary of internal objects mapped against the autowired methods calls.
 	dummyDataObjects=listDummyDataInMethod(methodName,fileName)
 	file = open(fileName,"r")
 	file.seek(0)
@@ -70,7 +70,7 @@ def listInternalObjects(methodName,fileName):
 	return objectRel
 
 
-def parseIfElseConditions(methodName,fileName):
+def parseIfElseConditions(methodName,fileName):#returns the if-else constructs in a parsable manner in case of nested and multiple statements. 
 	file = open(fileName,"r")
 	file.seek(0)
 	i = file.readlines() 
@@ -92,7 +92,7 @@ def parseIfElseConditions(methodName,fileName):
 	return conditions
 
 
-def parseBlock(i,j,lineNumber):
+def parseBlock(i,j,lineNumber):#Recursive function to parse an if or else for nested conditions.
 	conditions=[]
 	for k in range(j,lineNumber):
 		if(k>=lineNumber):
@@ -113,7 +113,7 @@ def parseBlock(i,j,lineNumber):
 			k=lineNum
 	return conditions
 
-def findBlockLastLine(i,j):
+def findBlockLastLine(i,j):#To find the end line of an if or else block.
 	count =0
 	while(True):
 		if("}" in i[j]):
@@ -125,14 +125,14 @@ def findBlockLastLine(i,j):
 			break
 	return j	
 
-def findCount(brace,line):
+def findCount(brace,line):#Counts the number of brackets in a line.(Only a particular bracket though)
 	count=0
 	for i in range(0,len(line)):
 		if(line[i] == brace):
 			count =count +1
 	return count
 
-def getMethodLength(i,methodName):
+def getMethodLength(i,methodName):#Gets the length of a method.
 	count =0
 	for j in range(0,len(i)):
 		if(methodName in i[j]):
